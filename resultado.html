@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tu diploma</title>
+  <style>
+    body{font-family:Arial, sans-serif; padding:24px; max-width:720px; margin:auto;}
+    .card{border:1px solid #eee; border-radius:14px; padding:18px; box-shadow:0 8px 24px rgba(0,0,0,.06);}
+    a.btn{display:inline-block; padding:12px 14px; border-radius:12px; text-decoration:none; margin:6px 8px 0 0; border:1px solid #ddd;}
+    a.primary{border-color:#000; color:#000;}
+    .muted{color:#555;}
+    hr{border:none;border-top:1px solid #eee;margin:16px 0;}
+    .site-footer{
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+}
+
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 id="title">Cargando...</h2>
+    <div id="box"></div>
+  </div>
+
+<script>
+  const qs = new URLSearchParams(location.search);
+  const ok = qs.get("ok");
+  const nombre = qs.get("nombre") || "participante";
+  const pdfUrl = qs.get("pdf");
+  const shareBase = qs.get("share") || "Mira mi diploma:";
+
+  const title = document.getElementById("title");
+  const box = document.getElementById("box");
+
+  if (ok !== "1" || !pdfUrl) {
+    title.textContent = "Algo salió mal";
+    const err = qs.get("error") || "No se pudo generar el diploma.";
+    box.innerHTML = `<p class="muted">${escapeHtml(err)}</p>
+                 <p><a class="btn primary" href="/certificadosRifa/">Volver</a></p>`;
+
+  } else {
+    title.textContent = "¡Diploma generado!";
+    const shareText = encodeURIComponent(`${shareBase} ${pdfUrl}`);
+    const encodedUrl = encodeURIComponent(pdfUrl);
+
+    box.innerHTML = `
+      <p class="muted">Listo, <b>${escapeHtml(nombre)}</b>. Aquí está tu diploma:</p>
+      <p><a class="btn primary" href="${pdfUrl}" target="_blank" rel="noopener">Ver / Descargar diploma</a></p>
+      <hr />
+      <p class="muted">Compártelo:</p>
+      <p>
+        <a class="btn" href="https://wa.me/?text=${shareText}" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="btn" href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" target="_blank" rel="noopener">Facebook</a>
+        <a class="btn" href="https://twitter.com/intent/tweet?text=${shareText}" target="_blank" rel="noopener">X</a>
+      </p>
+      <p class="muted" style="margin-top:14px;">Link directo:</p>
+      <p style="word-break:break-all;"><small>${escapeHtml(pdfUrl)}</small></p>
+      <p style="margin-top:14px;"><a class="btn primary" href="/certificadosRifa/">Generar otro</a></p>
+    `;
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
+</script>
+
+<footer class="site-footer">
+  <p>Inge. Aníbal Morales &copy; 2026</p>
+</footer>
+</body>
+
+
+</html>
